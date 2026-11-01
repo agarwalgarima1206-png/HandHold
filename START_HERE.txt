@@ -1,0 +1,14 @@
+HANDHOLD PROJECT - START HERE
+
+1) Frontend: open the frontend folder in VS Code.
+   Run: npm install
+   Run: npm run dev
+
+2) Backend: open a second terminal in the backend folder.
+   Follow backend/README.md to configure PostgreSQL and .env.
+   Run: npm install
+   Run: npx prisma generate
+   Run: npx prisma migrate dev --name init
+   Run: npm run dev
+
+Frontend currently runs as the existing React demo. New Student pages save demo data in browser localStorage. Backend REST API starter is provided separately and is not yet wired into every frontend page.

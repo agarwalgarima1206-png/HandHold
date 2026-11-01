@@ -1,0 +1,1 @@
+import {Router} from 'express';import {createMeeting,listMeetings,updateMeeting} from '../controllers/meeting.controller.js';import {requireAuth} from '../middleware/auth.middleware.js';const r=Router();r.use(requireAuth);r.get('/',listMeetings);r.post('/',createMeeting);r.patch('/:id',updateMeeting);export default r;

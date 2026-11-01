@@ -1,0 +1,1 @@
+import {Router} from 'express';import {listGoals,createGoal,updateGoal,deleteGoal} from '../controllers/goal.controller.js';import {requireAuth,allowRoles} from '../middleware/auth.middleware.js';const r=Router();r.use(requireAuth,allowRoles('STUDENT'));r.get('/',listGoals);r.post('/',createGoal);r.patch('/:id',updateGoal);r.delete('/:id',deleteGoal);export default r;

@@ -1,0 +1,1 @@
+import {Router} from 'express';import {listMentors,myStudents} from '../controllers/mentor.controller.js';import {requireAuth,allowRoles} from '../middleware/auth.middleware.js';const r=Router();r.get('/',requireAuth,listMentors);r.get('/students',requireAuth,allowRoles('MENTOR'),myStudents);export default r;
