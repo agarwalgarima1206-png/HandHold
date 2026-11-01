@@ -1,0 +1,1 @@
+import{useParams}from"react-router-dom";import MentorPortalPage from"./MentorPortalPage";export default function StudentDetails(){const{studentId}=useParams();return <MentorPortalPage title={`Student ${studentId||"Details"}`} subtitle="Student profile details will be loaded from the backend."/>}
