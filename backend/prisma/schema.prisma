@@ -1,10 +1,107 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "postgresql" url = env("DATABASE_URL") }
-enum Role { STUDENT MENTOR ADMIN }
-enum MeetingStatus { REQUESTED CONFIRMED COMPLETED CANCELLED }
-model User { id String @id @default(cuid()) name String email String @unique passwordHash String role Role @default(STUDENT) studentProfile StudentProfile? mentorProfile MentorProfile? meetingsAsStudent Meeting[] @relation("StudentMeetings") meetingsAsMentor Meeting[] @relation("MentorMeetings") goals Goal[] feedback Feedback[] createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }
-model StudentProfile { id String @id @default(cuid()) userId String @unique user User @relation(fields:[userId],references:[id],onDelete:Cascade) college String? course String? semester String? interests String[] @default([]) goal String? mentoringArea String? availability String[] @default([]) mentorId String? mentor User? @relation(fields:[mentorId],references:[id]) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }
-model MentorProfile { id String @id @default(cuid()) userId String @unique user User @relation(fields:[userId],references:[id],onDelete:Cascade) expertise String[] @default([]) bio String? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }
-model Meeting { id String @id @default(cuid()) studentId String student User @relation("StudentMeetings",fields:[studentId],references:[id],onDelete:Cascade) mentorId String? mentor User? @relation("MentorMeetings",fields:[mentorId],references:[id],onDelete:SetNull) topic String date DateTime time String status MeetingStatus @default(REQUESTED) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }
-model Goal { id String @id @default(cuid()) studentId String student User @relation(fields:[studentId],references:[id],onDelete:Cascade) title String description String @default("") completed Boolean @default(false) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }
-model Feedback { id String @id @default(cuid()) userId String user User @relation(fields:[userId],references:[id],onDelete:Cascade) rating String comment String @default("") createdAt DateTime @default(now()) }
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  MENTOR
+  ADMIN
+}
+
+enum MeetingStatus {
+  REQUESTED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id                String          @id @default(cuid())
+  name              String
+  email             String          @unique
+  passwordHash      String
+  role              Role            @default(STUDENT)
+  studentProfile    StudentProfile?
+  mentorProfile     MentorProfile?
+  meetingsAsStudent Meeting[]       @relation("StudentMeetings")
+  meetingsAsMentor  Meeting[]       @relation("MentorMeetings")
+  studentsMentored  StudentProfile[] @relation("StudentMentor")
+  goals             Goal[]
+  feedback          Feedback[]
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}
+
+model StudentProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  college       String?
+  course        String?
+  semester      String?
+  interests     String[] @default([])
+  goal          String?
+  mentoringArea String?
+  availability  String[] @default([])
+  mentorId      String?
+  mentor        User?    @relation("StudentMentor", fields: [mentorId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model MentorProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expertise String[] @default([])
+  bio       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Meeting {
+  id        String        @id @default(cuid())
+  studentId String
+  student   User          @relation("StudentMeetings", fields: [studentId], references: [id], onDelete: Cascade)
+  mentorId  String?
+  mentor    User?         @relation("MentorMeetings", fields: [mentorId], references: [id], onDelete: SetNull)
+  topic     String
+  date      DateTime
+  time      String
+  status    MeetingStatus @default(REQUESTED)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model Goal {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  title       String
+  description String   @default("")
+  completed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    String
+  comment   String   @default("")
+  createdAt DateTime @default(now())
+}
+
+model StudentRecord {
+  id    Int     @id @default(autoincrement())
+  name  String? @db.VarChar(100)
+  email String? @db.VarChar(100)
+
+  @@map("students")
+}
