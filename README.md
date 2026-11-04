@@ -17,3 +17,4 @@ React + Vite frontend for the HandHold student mentoring platform.
 
 ## Important demo notes
 Some screens use browser/local component state and are frontend demonstrations. Real authentication, mentor assignment, messages, meeting approval, and persistent API syncing need to be connected to your team's backend. Profile settings are saved locally in the browser for this demo.
+

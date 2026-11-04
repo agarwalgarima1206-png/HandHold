@@ -1,4 +1,6 @@
+
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   ArrowLeft,
@@ -12,9 +14,14 @@ import {
   Target,
   CheckCircle2,
 } from "lucide-react";
+import { saveStudentProfile } from "../../services/studentService";
 
 function Onboarding() {
+  const navigate = useNavigate();
+
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -37,35 +44,84 @@ function Onboarding() {
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const nextStep = () => {
-    if (step < 3) {
-      setStep(step + 1);
-    } else {
-      console.log("Student onboarding data:", formData);
+    setError("");
 
-      // Backend connect hone ke baad:
-      // API call yahan hogi
+    if (step === 1) {
+      if (
+        !formData.name.trim() ||
+        !formData.college.trim() ||
+        !formData.course.trim() ||
+        !formData.semester
+      ) {
+        setError("Please complete all academic details.");
+        return;
+      }
+    }
+
+    if (step === 2) {
+      if (
+        formData.guidance.length === 0 ||
+        formData.interests.length === 0
+      ) {
+        setError("Please select at least one guidance area and interest.");
+        return;
+      }
+    }
+
+    if (step < 3) {
+      setStep((prev) => prev + 1);
+    } else {
+      handleSubmit();
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.goal.trim() || !formData.mentoringArea) {
+      setError("Please enter your goal and select a mentoring preference.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      await saveStudentProfile({
+        college: formData.college.trim(),
+        course: formData.course.trim(),
+        semester: formData.semester,
+        guidance: formData.guidance,
+        interests: formData.interests,
+        goal: formData.goal.trim(),
+        mentoringArea: formData.mentoringArea,
+      });
+
+      navigate("/student/dashboard");
+    } catch (err) {
+      setError(err.message || "Unable to save your profile. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const previousStep = () => {
+    setError("");
     if (step > 1) {
-      setStep(step - 1);
+      setStep((prev) => prev - 1);
     }
   };
 
   return (
     <div className="onboarding-page">
-
-      {/* HEADER */}
       <header className="onboarding-header">
-
         <div className="onboarding-brand">
           <div className="onboarding-logo">
             <GraduationCap size={21} />
@@ -77,13 +133,9 @@ function Onboarding() {
           </div>
         </div>
 
-        <span className="onboarding-step">
-          Step {step} of 3
-        </span>
-
+        <span className="onboarding-step">Step {step} of 3</span>
       </header>
 
-      {/* PROGRESS */}
       <div className="onboarding-progress">
         <div
           className="onboarding-progress-fill"
@@ -91,14 +143,9 @@ function Onboarding() {
         />
       </div>
 
-      {/* CONTENT */}
       <main className="onboarding-container">
-
         <div className="onboarding-intro">
-
-          <span className="onboarding-label">
-            LET'S GET STARTED
-          </span>
+          <span className="onboarding-label">LET'S GET STARTED</span>
 
           <h1>
             Help us understand
@@ -110,13 +157,10 @@ function Onboarding() {
             A few details will help us understand your goals and
             create a better mentoring experience for you.
           </p>
-
         </div>
 
-        {/* STEP 1 */}
         {step === 1 && (
           <section className="onboarding-card">
-
             <div className="onboarding-card-header">
               <div className="onboarding-card-icon">
                 <GraduationCap size={20} />
@@ -129,10 +173,8 @@ function Onboarding() {
             </div>
 
             <div className="onboarding-form-grid">
-
               <div className="onboarding-field full">
                 <label>Full name</label>
-
                 <input
                   type="text"
                   name="name"
@@ -144,7 +186,6 @@ function Onboarding() {
 
               <div className="onboarding-field full">
                 <label>College / University</label>
-
                 <input
                   type="text"
                   name="college"
@@ -156,7 +197,6 @@ function Onboarding() {
 
               <div className="onboarding-field">
                 <label>Course / Branch</label>
-
                 <input
                   type="text"
                   name="course"
@@ -168,33 +208,25 @@ function Onboarding() {
 
               <div className="onboarding-field">
                 <label>Year / Semester</label>
-
                 <select
                   name="semester"
                   value={formData.semester}
                   onChange={handleChange}
                 >
                   <option value="">Select your semester</option>
-                  <option value="1">1st Semester</option>
-                  <option value="2">2nd Semester</option>
-                  <option value="3">3rd Semester</option>
-                  <option value="4">4th Semester</option>
-                  <option value="5">5th Semester</option>
-                  <option value="6">6th Semester</option>
-                  <option value="7">7th Semester</option>
-                  <option value="8">8th Semester</option>
+                  {Array.from({ length: 8 }, (_, i) => i + 1).map((n) => (
+                    <option key={n} value={String(n)}>
+                      {n}{["st", "nd", "rd"][n - 1] || "th"} Semester
+                    </option>
+                  ))}
                 </select>
               </div>
-
             </div>
-
           </section>
         )}
 
-        {/* STEP 2 */}
         {step === 2 && (
           <section className="onboarding-card">
-
             <div className="onboarding-card-header">
               <div className="onboarding-card-icon">
                 <Target size={20} />
@@ -202,18 +234,14 @@ function Onboarding() {
 
               <div>
                 <h3>Your interests</h3>
-                <p>
-                  Select the areas where you would like guidance.
-                </p>
+                <p>Select the areas where you would like guidance.</p>
               </div>
             </div>
 
             <div className="selection-section">
-
               <label>What do you need guidance in?</label>
 
               <div className="selection-grid">
-
                 {[
                   ["Academic", GraduationCap],
                   ["Career", BriefcaseBusiness],
@@ -226,33 +254,24 @@ function Onboarding() {
                     type="button"
                     key={item}
                     className={`selection-option ${
-                      formData.guidance.includes(item)
-                        ? "selected"
-                        : ""
+                      formData.guidance.includes(item) ? "selected" : ""
                     }`}
-                    onClick={() =>
-                      toggleSelection("guidance", item)
-                    }
+                    onClick={() => toggleSelection("guidance", item)}
                   >
                     <Icon size={19} />
                     <span>{item}</span>
-
                     {formData.guidance.includes(item) && (
                       <CheckCircle2 size={17} />
                     )}
                   </button>
                 ))}
-
               </div>
-
             </div>
 
             <div className="selection-section">
-
               <label>What are you interested in?</label>
 
               <div className="selection-grid">
-
                 {[
                   ["Software Development", Code2],
                   ["AI / ML", BrainCircuit],
@@ -265,34 +284,24 @@ function Onboarding() {
                     type="button"
                     key={item}
                     className={`selection-option ${
-                      formData.interests.includes(item)
-                        ? "selected"
-                        : ""
+                      formData.interests.includes(item) ? "selected" : ""
                     }`}
-                    onClick={() =>
-                      toggleSelection("interests", item)
-                    }
+                    onClick={() => toggleSelection("interests", item)}
                   >
                     <Icon size={19} />
                     <span>{item}</span>
-
                     {formData.interests.includes(item) && (
                       <CheckCircle2 size={17} />
                     )}
                   </button>
                 ))}
-
               </div>
-
             </div>
-
           </section>
         )}
 
-        {/* STEP 3 */}
         {step === 3 && (
           <section className="onboarding-card">
-
             <div className="onboarding-card-header">
               <div className="onboarding-card-icon">
                 <Target size={20} />
@@ -300,16 +309,12 @@ function Onboarding() {
 
               <div>
                 <h3>Your goals</h3>
-                <p>
-                  Tell us what you want to achieve with mentoring.
-                </p>
+                <p>Tell us what you want to achieve with mentoring.</p>
               </div>
             </div>
 
             <div className="onboarding-field full">
-
               <label>What's your short-term goal?</label>
-
               <textarea
                 name="goal"
                 value={formData.goal}
@@ -317,15 +322,12 @@ function Onboarding() {
                 placeholder="For example: I want to prepare for placements, improve my technical skills, or build my first project..."
                 rows="5"
               />
-
             </div>
 
             <div className="selection-section">
-
               <label>What kind of mentoring would help you most?</label>
 
               <div className="mentor-preference-grid">
-
                 {[
                   "Career guidance",
                   "Technical guidance",
@@ -336,40 +338,38 @@ function Onboarding() {
                     type="button"
                     key={item}
                     className={`preference-option ${
-                      formData.mentoringArea === item
-                        ? "selected"
-                        : ""
+                      formData.mentoringArea === item ? "selected" : ""
                     }`}
                     onClick={() =>
-                      setFormData({
-                        ...formData,
+                      setFormData((prev) => ({
+                        ...prev,
                         mentoringArea: item,
-                      })
+                      }))
                     }
                   >
                     <span>{item}</span>
-
                     {formData.mentoringArea === item && (
                       <CheckCircle2 size={17} />
                     )}
                   </button>
                 ))}
-
               </div>
-
             </div>
-
           </section>
         )}
 
-        {/* ACTIONS */}
-        <div className="onboarding-actions">
+        {error && (
+          <p role="alert" style={{ color: "#d94848", marginTop: "16px" }}>
+            {error}
+          </p>
+        )}
 
+        <div className="onboarding-actions">
           <button
             type="button"
             className="onboarding-back"
             onClick={previousStep}
-            disabled={step === 1}
+            disabled={step === 1 || loading}
           >
             <ArrowLeft size={18} />
             Back
@@ -379,16 +379,18 @@ function Onboarding() {
             type="button"
             className="onboarding-next"
             onClick={nextStep}
+            disabled={loading}
           >
-            {step === 3 ? "Complete Profile" : "Continue"}
+            {loading
+              ? "Saving..."
+              : step === 3
+                ? "Complete Profile"
+                : "Continue"}
 
-            <ArrowRight size={18} />
+            {!loading && <ArrowRight size={18} />}
           </button>
-
         </div>
-
       </main>
-
     </div>
   );
 }
