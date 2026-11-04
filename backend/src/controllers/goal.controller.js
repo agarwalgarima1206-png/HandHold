@@ -54,6 +54,12 @@ export const updateGoal = asyncHandler(async (req, res) => {
     });
   }
 
+  if (title !== undefined && !title.trim()) {
+    return res.status(400).json({
+      message: "Goal title cannot be empty",
+    });
+  }
+
   const goal = await prisma.goal.update({
     where: { id },
     data: {
@@ -62,6 +68,29 @@ export const updateGoal = asyncHandler(async (req, res) => {
       ...(completed !== undefined && { completed }),
     },
   });
+
+  // Notify assigned mentor when student completes a goal
+  if (completed === true && !existingGoal.completed) {
+    try {
+      const studentProfile = await prisma.studentProfile.findUnique({
+        where: { userId: req.user.id },
+        select: { mentorId: true },
+      });
+
+      if (studentProfile?.mentorId) {
+        await prisma.notification.create({
+          data: {
+            userId: studentProfile.mentorId,
+            title: "Goal Completed",
+            message: `${req.user.name} has completed the goal: ${goal.title}`,
+            type: "GOAL",
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Goal notification error:", error);
+    }
+  }
 
   res.json({
     message: "Goal updated successfully",

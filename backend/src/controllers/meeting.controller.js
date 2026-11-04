@@ -32,7 +32,6 @@ export const createMeeting = asyncHandler(async (req, res) => {
     });
   }
 
-  // Get student's assigned mentor
   const studentProfile = await prisma.studentProfile.findUnique({
     where: { userId: req.user.id },
     select: { mentorId: true },
@@ -68,6 +67,20 @@ export const createMeeting = asyncHandler(async (req, res) => {
       },
     },
   });
+
+  // Notify mentor about new meeting request
+  try {
+    await prisma.notification.create({
+      data: {
+        userId: meeting.mentorId,
+        title: "New Meeting Request",
+        message: `${meeting.student.name} has requested a meeting about "${meeting.topic}".`,
+        type: "MEETING",
+      },
+    });
+  } catch (error) {
+    console.error("Meeting notification error:", error);
+  }
 
   res.status(201).json({
     message: "Meeting request submitted successfully",
@@ -148,8 +161,10 @@ export const updateMeeting = asyncHandler(async (req, res) => {
     });
   }
 
-  if (meeting.status !== "REQUESTED" &&
-      meeting.status !== "CONFIRMED") {
+  if (
+    meeting.status !== "REQUESTED" &&
+    meeting.status !== "CONFIRMED"
+  ) {
     return res.status(400).json({
       message: "This meeting can no longer be updated",
     });
@@ -186,6 +201,45 @@ export const updateMeeting = asyncHandler(async (req, res) => {
       },
     },
   });
+
+  // Send notification only when status actually changes
+  if (meeting.status !== status) {
+    let recipientId;
+    let title;
+    let message;
+
+    if (isMentor) {
+      recipientId = updatedMeeting.studentId;
+
+      if (status === "CONFIRMED") {
+        title = "Meeting Confirmed";
+        message = `Your meeting about "${updatedMeeting.topic}" has been confirmed by your mentor.`;
+      } else if (status === "CANCELLED") {
+        title = "Meeting Cancelled";
+        message = `Your meeting about "${updatedMeeting.topic}" has been cancelled by your mentor.`;
+      } else {
+        title = "Meeting Completed";
+        message = `Your meeting about "${updatedMeeting.topic}" has been marked as completed.`;
+      }
+    } else {
+      recipientId = updatedMeeting.mentorId;
+      title = "Meeting Cancelled";
+      message = `${updatedMeeting.student.name} has cancelled the meeting about "${updatedMeeting.topic}".`;
+    }
+
+    try {
+      await prisma.notification.create({
+        data: {
+          userId: recipientId,
+          title,
+          message,
+          type: "MEETING",
+        },
+      });
+    } catch (error) {
+      console.error("Meeting notification error:", error);
+    }
+  }
 
   res.json({
     message: "Meeting updated successfully",

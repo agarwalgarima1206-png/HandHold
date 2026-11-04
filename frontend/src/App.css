@@ -391,3 +391,248 @@
     justify-content: flex-start;
   }
 }
+
+
+/* NOTIFICATION SYSTEM */
+
+.notification-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.notification-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: #f5f3ff;
+  color: #6d5bd0;
+  cursor: pointer;
+}
+
+.notification-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 4px;
+  border-radius: 20px;
+  background: #ef476f;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  width: 360px;
+  max-width: calc(100vw - 30px);
+  max-height: 450px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #eeeaf7;
+  border-radius: 14px;
+  box-shadow: 0 12px 35px rgba(30, 20, 60, 0.16);
+  z-index: 1002;
+}
+
+.notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 17px;
+  border-bottom: 1px solid #eeeaf7;
+}
+
+.notification-header h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.notification-header span {
+  color: #888;
+  font-size: 12px;
+}
+
+.notification-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notification-action,
+.notification-close,
+.notification-delete {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #777;
+  padding: 6px;
+}
+
+.notification-action:hover,
+.notification-close:hover,
+.notification-delete:hover {
+  color: #6d5bd0;
+}
+
+.notification-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+}
+
+.notification-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 14px;
+  border-bottom: 1px solid #f0edf5;
+}
+
+.notification-item.unread {
+  background: #f8f6ff;
+}
+
+.notification-item-icon,
+.notification-empty-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #eeeaff;
+  color: #6d5bd0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-item-content strong {
+  display: block;
+  font-size: 13px;
+  color: #28243a;
+}
+
+.notification-item-content p {
+  margin: 5px 0;
+  color: #666;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.notification-item-content span {
+  color: #999;
+  font-size: 10px;
+}
+
+.notification-read-button {
+  display: block;
+  margin-top: 7px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #6d5bd0;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.notification-empty,
+.notification-message {
+  padding: 30px 20px;
+  text-align: center;
+  color: #888;
+}
+
+.notification-empty-icon {
+  margin: 0 auto 12px;
+}
+
+.notification-empty h4 {
+  margin: 0 0 7px;
+  color: #333;
+  font-size: 14px;
+}
+
+.notification-empty p,
+.notification-message p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.notification-error {
+  padding: 10px 15px;
+  margin: 0;
+  color: #c62828;
+  font-size: 12px;
+  background: #fff1f1;
+}
+
+@media (max-width: 480px) {
+  .notification-dropdown {
+    position: fixed;
+    top: 75px;
+    right: 12px;
+    width: calc(100vw - 24px);
+  }
+}
+/* Switch Account Floating Button */
+.account-switcher {
+  position: fixed;
+  top: 20px;
+  right: 25px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 17px;
+  border: 1px solid #e8d9f5;
+  border-radius: 30px;
+  background: #ffffff;
+  color: #6841a5;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(40, 20, 70, 0.12);
+  transition: all 0.2s ease;
+}
+
+.account-switcher:hover {
+  background: #6841a5;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(104, 65, 165, 0.25);
+}
+
+@media (max-width: 600px) {
+  .account-switcher {
+    top: 12px;
+    right: 12px;
+    padding: 9px 12px;
+    font-size: 12px;
+    gap: 6px;
+  }
+}

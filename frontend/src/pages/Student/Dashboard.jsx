@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import {
   LayoutDashboard,
@@ -6,7 +7,6 @@ import {
   CalendarDays,
   MessageCircle,
   Star,
-  Bell,
   ChevronRight,
   HeartHandshake,
   Clock3,
@@ -16,8 +16,9 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
+import NotificationBell from "../../components/Notifications/NotificationBell";
+
 function Dashboard() {
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showMeetingModal, setShowMeetingModal] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
 
@@ -52,7 +53,7 @@ function Dashboard() {
   return (
     <div className="student-dashboard">
 
-      {/* ================= SIDEBAR ================= */}
+      {/* SIDEBAR */}
       <aside className="student-sidebar">
 
         <div className="student-sidebar-brand">
@@ -129,8 +130,7 @@ function Dashboard() {
 
       </aside>
 
-
-      {/* ================= MAIN ================= */}
+      {/* MAIN CONTENT */}
       <main className="student-main">
 
         {/* TOP BAR */}
@@ -143,58 +143,10 @@ function Dashboard() {
 
           <div className="student-topbar-actions">
 
-            {/* Notifications */}
-            <div className="notification-wrapper">
+            {/* REAL NOTIFICATIONS */}
+            <NotificationBell />
 
-              <button
-                className="notification-button"
-                onClick={() =>
-                  setShowNotifications(!showNotifications)
-                }
-                aria-label="Notifications"
-              >
-                <Bell size={20} />
-              </button>
-
-              <span className="notification-dot"></span>
-
-              {showNotifications && (
-                <div className="notification-dropdown">
-
-                  <div className="notification-header">
-                    <div>
-                      <h3>Notifications</h3>
-                      <span>Your latest updates</span>
-                    </div>
-
-                    <button
-                      onClick={() => setShowNotifications(false)}
-                      className="notification-close"
-                    >
-                      <X size={17} />
-                    </button>
-                  </div>
-
-                  <div className="notification-empty">
-                    <div className="notification-empty-icon">
-                      <Bell size={20} />
-                    </div>
-
-                    <h4>No new notifications</h4>
-
-                    <p>
-                      Meeting updates, mentor activity and reminders
-                      will appear here.
-                    </p>
-                  </div>
-
-                </div>
-              )}
-
-            </div>
-
-
-            {/* Profile */}
+            {/* PROFILE */}
             <div className="student-profile">
 
               <div className="student-avatar">
@@ -212,11 +164,10 @@ function Dashboard() {
 
         </header>
 
-
         {/* CONTENT */}
         <div className="student-content">
 
-          {/* ================= WELCOME ================= */}
+          {/* WELCOME */}
           <section className="student-welcome">
 
             <div>
@@ -240,11 +191,10 @@ function Dashboard() {
 
           </section>
 
-
-          {/* ================= SUMMARY CARDS ================= */}
+          {/* SUMMARY CARDS */}
           <section className="dashboard-summary-grid">
 
-            {/* Mentor */}
+            {/* MENTOR */}
             <div className="dashboard-summary-card">
 
               <div className="summary-card-top">
@@ -270,8 +220,7 @@ function Dashboard() {
 
             </div>
 
-
-            {/* Goals */}
+            {/* GOALS */}
             <div className="dashboard-summary-card">
 
               <div className="summary-card-top">
@@ -297,8 +246,7 @@ function Dashboard() {
 
             </div>
 
-
-            {/* Meetings */}
+            {/* MEETINGS */}
             <div className="dashboard-summary-card">
 
               <div className="summary-card-top">
@@ -329,11 +277,10 @@ function Dashboard() {
 
           </section>
 
-
-          {/* ================= MAIN GRID ================= */}
+          {/* MAIN GRID */}
           <section className="dashboard-main-grid">
 
-            {/* Mentor Connection */}
+            {/* MENTOR CONNECTION */}
             <div className="dashboard-panel mentor-panel">
 
               <div className="panel-header">
@@ -349,7 +296,6 @@ function Dashboard() {
                 <UserRound size={20} />
 
               </div>
-
 
               <div className="mentor-empty-state">
 
@@ -377,8 +323,7 @@ function Dashboard() {
 
             </div>
 
-
-            {/* Upcoming Meeting */}
+            {/* UPCOMING MEETING */}
             <div className="dashboard-panel">
 
               <div className="panel-header">
@@ -394,7 +339,6 @@ function Dashboard() {
                 <Clock3 size={20} />
 
               </div>
-
 
               <div className="meeting-empty-state">
 
@@ -420,11 +364,10 @@ function Dashboard() {
 
           </section>
 
-
-          {/* ================= LOWER GRID ================= */}
+          {/* LOWER GRID */}
           <section className="dashboard-bottom-grid">
 
-            {/* Goals */}
+            {/* GOALS */}
             <div className="dashboard-panel progress-panel">
 
               <div className="panel-header">
@@ -440,7 +383,6 @@ function Dashboard() {
                 <Target size={20} />
 
               </div>
-
 
               <div className="progress-empty-state">
 
@@ -469,8 +411,7 @@ function Dashboard() {
 
             </div>
 
-
-            {/* Messages */}
+            {/* MESSAGES */}
             <div className="dashboard-panel">
 
               <div className="panel-header">
@@ -486,7 +427,6 @@ function Dashboard() {
                 <MessageCircle size={20} />
 
               </div>
-
 
               <div className="message-empty-state">
 
@@ -514,8 +454,7 @@ function Dashboard() {
 
           </section>
 
-
-          {/* ================= QUICK ACTIONS ================= */}
+          {/* QUICK ACTIONS */}
           <section className="quick-actions-section">
 
             <div className="quick-actions-heading">
@@ -527,7 +466,6 @@ function Dashboard() {
                 <h3>What would you like to do?</h3>
               </div>
             </div>
-
 
             <div className="quick-actions-grid">
 
@@ -547,7 +485,6 @@ function Dashboard() {
                 <ChevronRight size={17} />
               </a>
 
-
               <button
                 className="quick-action-card"
                 onClick={() => setShowMeetingModal(true)}
@@ -563,7 +500,6 @@ function Dashboard() {
 
                 <ChevronRight size={17} />
               </button>
-
 
               <a
                 href="/student/messages"
@@ -589,8 +525,7 @@ function Dashboard() {
 
       </main>
 
-
-      {/* ================= MEETING MODAL ================= */}
+      {/* MEETING MODAL */}
       {showMeetingModal && (
         <div
           className="meeting-modal-overlay"
@@ -609,7 +544,6 @@ function Dashboard() {
               <X size={20} />
             </button>
 
-
             {!requestSent ? (
               <>
                 <div className="modal-icon">
@@ -626,7 +560,6 @@ function Dashboard() {
                   Choose a preferred time and tell your mentor
                   what you would like to discuss.
                 </p>
-
 
                 <form
                   onSubmit={handleMeetingSubmit}
@@ -670,9 +603,7 @@ function Dashboard() {
                         Placement preparation
                       </option>
                     </select>
-
                   </label>
-
 
                   <div className="meeting-form-row">
 
@@ -692,7 +623,6 @@ function Dashboard() {
                       />
                     </label>
 
-
                     <label>
                       Preferred Time
 
@@ -711,7 +641,6 @@ function Dashboard() {
 
                   </div>
 
-
                   <label>
                     Message
 
@@ -727,7 +656,6 @@ function Dashboard() {
                       }
                     />
                   </label>
-
 
                   <button
                     type="submit"
