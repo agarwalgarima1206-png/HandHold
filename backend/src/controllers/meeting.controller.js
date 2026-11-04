@@ -1,4 +1,194 @@
-import {prisma} from '../config/prisma.js';import {asyncHandler} from '../utils/asyncHandler.js';
-export const createMeeting=asyncHandler(async(req,res)=>{const {topic,date,time,mentorId}=req.body;if(!topic||!date||!time)return res.status(400).json({message:'Topic, date and time are required'});const meeting=await prisma.meeting.create({data:{studentId:req.user.id,mentorId:mentorId||null,topic,date:new Date(date),time,status:'REQUESTED'}});res.status(201).json({meeting});});
-export const listMeetings=asyncHandler(async(req,res)=>{const where=req.user.role==='MENTOR'?{mentorId:req.user.id}:{studentId:req.user.id};const meetings=await prisma.meeting.findMany({where,orderBy:{date:'asc'}});res.json({meetings});});
-export const updateMeeting=asyncHandler(async(req,res)=>{const meeting=await prisma.meeting.findUnique({where:{id:req.params.id}});if(!meeting)return res.status(404).json({message:'Meeting not found'});if(meeting.studentId!==req.user.id&&meeting.mentorId!==req.user.id)return res.status(403).json({message:'Not allowed'});const updated=await prisma.meeting.update({where:{id:meeting.id},data:{status:req.body.status}});res.json({meeting:updated});});
+
+import { prisma } from "../config/prisma.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+
+// Create meeting request by student
+export const createMeeting = asyncHandler(async (req, res) => {
+  if (req.user.role !== "STUDENT") {
+    return res.status(403).json({
+      message: "Only students can request meetings",
+    });
+  }
+
+  const { topic, date, time, mentorId } = req.body;
+
+  if (!topic?.trim() || !date || !time?.trim()) {
+    return res.status(400).json({
+      message: "Topic, date and time are required",
+    });
+  }
+
+  const meetingDate = new Date(date);
+
+  if (Number.isNaN(meetingDate.getTime())) {
+    return res.status(400).json({
+      message: "Invalid meeting date",
+    });
+  }
+
+  if (meetingDate < new Date()) {
+    return res.status(400).json({
+      message: "Meeting date cannot be in the past",
+    });
+  }
+
+  // Get student's assigned mentor
+  const studentProfile = await prisma.studentProfile.findUnique({
+    where: { userId: req.user.id },
+    select: { mentorId: true },
+  });
+
+  if (!studentProfile?.mentorId) {
+    return res.status(400).json({
+      message: "Please get a mentor assigned before requesting a meeting",
+    });
+  }
+
+  if (mentorId && mentorId !== studentProfile.mentorId) {
+    return res.status(403).json({
+      message: "You can only request a meeting with your assigned mentor",
+    });
+  }
+
+  const meeting = await prisma.meeting.create({
+    data: {
+      studentId: req.user.id,
+      mentorId: studentProfile.mentorId,
+      topic: topic.trim(),
+      date: meetingDate,
+      time: time.trim(),
+      status: "REQUESTED",
+    },
+    include: {
+      student: {
+        select: { id: true, name: true, email: true },
+      },
+      mentor: {
+        select: { id: true, name: true, email: true },
+      },
+    },
+  });
+
+  res.status(201).json({
+    message: "Meeting request submitted successfully",
+    meeting,
+  });
+});
+
+// Get meetings for logged-in student or mentor
+export const listMeetings = asyncHandler(async (req, res) => {
+  let where;
+
+  if (req.user.role === "MENTOR") {
+    where = { mentorId: req.user.id };
+  } else if (req.user.role === "STUDENT") {
+    where = { studentId: req.user.id };
+  } else {
+    return res.status(403).json({
+      message: "Not allowed",
+    });
+  }
+
+  const meetings = await prisma.meeting.findMany({
+    where,
+    include: {
+      student: {
+        select: { id: true, name: true, email: true },
+      },
+      mentor: {
+        select: { id: true, name: true, email: true },
+      },
+    },
+    orderBy: [
+      { date: "asc" },
+      { time: "asc" },
+    ],
+  });
+
+  res.json({ meetings });
+});
+
+// Update meeting status
+export const updateMeeting = asyncHandler(async (req, res) => {
+  const { status } = req.body;
+
+  const allowedStatuses = [
+    "CONFIRMED",
+    "COMPLETED",
+    "CANCELLED",
+  ];
+
+  if (!allowedStatuses.includes(status)) {
+    return res.status(400).json({
+      message: "Invalid meeting status",
+    });
+  }
+
+  const meeting = await prisma.meeting.findUnique({
+    where: { id: req.params.id },
+  });
+
+  if (!meeting) {
+    return res.status(404).json({
+      message: "Meeting not found",
+    });
+  }
+
+  const isMentor =
+    req.user.role === "MENTOR" &&
+    meeting.mentorId === req.user.id;
+
+  const isStudent =
+    req.user.role === "STUDENT" &&
+    meeting.studentId === req.user.id;
+
+  if (!isMentor && !isStudent) {
+    return res.status(403).json({
+      message: "You are not allowed to update this meeting",
+    });
+  }
+
+  if (meeting.status !== "REQUESTED" &&
+      meeting.status !== "CONFIRMED") {
+    return res.status(400).json({
+      message: "This meeting can no longer be updated",
+    });
+  }
+
+  // Mentor can confirm, cancel or complete a meeting
+  if (isMentor) {
+    if (
+      status === "COMPLETED" &&
+      meeting.status !== "CONFIRMED"
+    ) {
+      return res.status(400).json({
+        message: "Only confirmed meetings can be completed",
+      });
+    }
+  }
+
+  // Student can only cancel their own meeting
+  if (isStudent && status !== "CANCELLED") {
+    return res.status(403).json({
+      message: "Students can only cancel meeting requests",
+    });
+  }
+
+  const updatedMeeting = await prisma.meeting.update({
+    where: { id: meeting.id },
+    data: { status },
+    include: {
+      student: {
+        select: { id: true, name: true, email: true },
+      },
+      mentor: {
+        select: { id: true, name: true, email: true },
+      },
+    },
+  });
+
+  res.json({
+    message: "Meeting updated successfully",
+    meeting: updatedMeeting,
+  });
+});
