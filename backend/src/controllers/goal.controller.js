@@ -1,5 +1,96 @@
-import {prisma} from '../config/prisma.js';import {asyncHandler} from '../utils/asyncHandler.js';
-export const listGoals=asyncHandler(async(req,res)=>res.json({goals:await prisma.goal.findMany({where:{studentId:req.user.id},orderBy:{createdAt:'desc'}})}));
-export const createGoal=asyncHandler(async(req,res)=>{if(!req.body.title?.trim())return res.status(400).json({message:'Goal title is required'});const goal=await prisma.goal.create({data:{studentId:req.user.id,title:req.body.title.trim(),description:req.body.description||''}});res.status(201).json({goal});});
-export const updateGoal=asyncHandler(async(req,res)=>{const goal=await prisma.goal.findFirst({where:{id:req.params.id,studentId:req.user.id}});if(!goal)return res.status(404).json({message:'Goal not found'});const updated=await prisma.goal.update({where:{id:goal.id},data:{title:req.body.title??goal.title,description:req.body.description??goal.description,completed:req.body.completed??goal.completed}});res.json({goal:updated});});
-export const deleteGoal=asyncHandler(async(req,res)=>{const result=await prisma.goal.deleteMany({where:{id:req.params.id,studentId:req.user.id}});if(!result.count)return res.status(404).json({message:'Goal not found'});res.status(204).end();});
+
+import { prisma } from "../config/prisma.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+
+// Get logged-in student's goals
+export const getGoals = asyncHandler(async (req, res) => {
+  const goals = await prisma.goal.findMany({
+    where: { studentId: req.user.id },
+    orderBy: { createdAt: "desc" },
+  });
+
+  res.json({ goals });
+});
+
+// Create a new goal
+export const createGoal = asyncHandler(async (req, res) => {
+  const { title, description = "" } = req.body;
+
+  if (!title || !title.trim()) {
+    return res.status(400).json({
+      message: "Goal title is required",
+    });
+  }
+
+  const goal = await prisma.goal.create({
+    data: {
+      studentId: req.user.id,
+      title: title.trim(),
+      description,
+    },
+  });
+
+  res.status(201).json({
+    message: "Goal created successfully",
+    goal,
+  });
+});
+
+// Update a goal
+export const updateGoal = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { title, description, completed } = req.body;
+
+  const existingGoal = await prisma.goal.findFirst({
+    where: {
+      id,
+      studentId: req.user.id,
+    },
+  });
+
+  if (!existingGoal) {
+    return res.status(404).json({
+      message: "Goal not found",
+    });
+  }
+
+  const goal = await prisma.goal.update({
+    where: { id },
+    data: {
+      ...(title !== undefined && { title: title.trim() }),
+      ...(description !== undefined && { description }),
+      ...(completed !== undefined && { completed }),
+    },
+  });
+
+  res.json({
+    message: "Goal updated successfully",
+    goal,
+  });
+});
+
+// Delete a goal
+export const deleteGoal = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const existingGoal = await prisma.goal.findFirst({
+    where: {
+      id,
+      studentId: req.user.id,
+    },
+  });
+
+  if (!existingGoal) {
+    return res.status(404).json({
+      message: "Goal not found",
+    });
+  }
+
+  await prisma.goal.delete({
+    where: { id },
+  });
+
+  res.json({
+    message: "Goal deleted successfully",
+  });
+});
