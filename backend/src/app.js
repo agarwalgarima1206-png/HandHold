@@ -8,7 +8,7 @@ import goalRoutes from './routes/goal.routes.js';
 import feedbackRoutes from './routes/feedback.routes.js';
 import { notFound, errorHandler } from './middleware/error.middleware.js';
 const app = express();
-app.use(cors({origin:process.env.CLIENT_URL || 'http://localhost:5173'}));
+app.use(cors());
 app.use(express.json({limit:'1mb'}));
 app.get('/api/health',(_req,res)=>res.json({status:'ok',service:'HandHold API'}));
 app.use('/api/auth',authRoutes);

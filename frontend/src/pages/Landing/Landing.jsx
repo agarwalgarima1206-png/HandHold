@@ -1,3 +1,5 @@
+
+import { useNavigate } from "react-router-dom";
 import {
   UserRoundSearch,
   Target,
@@ -12,16 +14,20 @@ import Navbar from "../../components/Navbar/Navbar";
 import heroIllustration from "../../assets/hero-illustration.png";
 
 function Landing() {
+  const navigate = useNavigate();
+
+  const goToAuth = () => {
+    navigate("/auth");
+  };
+
   return (
     <div className="landing-page">
 
-      {/* ================= NAVBAR ================= */}
+      {/* NAVBAR */}
       <Navbar />
 
-
-      {/* ================= HERO ================= */}
+      {/* HERO */}
       <section className="hero-section">
-
         <div className="hero-content">
 
           <div className="hero-badge">
@@ -44,12 +50,18 @@ function Landing() {
 
           <div className="hero-buttons">
 
-            <button className="primary-button">
+            <button
+              className="primary-button"
+              onClick={goToAuth}
+            >
               Get Started
               <ArrowRight size={18} />
             </button>
 
-            <button className="secondary-button">
+            <button
+              className="secondary-button"
+              onClick={goToAuth}
+            >
               Log In
             </button>
 
@@ -57,7 +69,6 @@ function Landing() {
 
           <div className="hero-note">
             <CheckCircle2 size={18} />
-
             <span>
               A structured space for students and mentors to grow together.
             </span>
@@ -65,22 +76,17 @@ function Landing() {
 
         </div>
 
-
-        {/* ================= HERO ILLUSTRATION ================= */}
+        {/* HERO ILLUSTRATION */}
         <div className="hero-visual">
 
           <div className="hero-image-wrapper">
-
             <img
               src={heroIllustration}
               alt="Student and mentor discussing progress"
               className="hero-illustration"
             />
-
           </div>
 
-
-          {/* Small conceptual card */}
           <div className="meeting-preview">
 
             <div className="meeting-icon">
@@ -89,20 +95,15 @@ function Landing() {
 
             <div>
               <span>Mentoring journey</span>
-
-              <strong>
-                Connect • Guide • Grow
-              </strong>
+              <strong>Connect • Guide • Grow</strong>
             </div>
 
           </div>
 
         </div>
-
       </section>
 
-
-      {/* ================= FEATURES ================= */}
+      {/* FEATURES */}
       <section className="features-section">
 
         <div className="section-heading">
@@ -123,7 +124,6 @@ function Landing() {
           </p>
 
         </div>
-
 
         <div className="features-grid">
 
@@ -152,11 +152,9 @@ function Landing() {
           />
 
         </div>
-
       </section>
 
-
-      {/* ================= HOW IT WORKS ================= */}
+      {/* HOW IT WORKS */}
       <section className="how-section">
 
         <div className="section-heading center">
@@ -175,7 +173,6 @@ function Landing() {
           </p>
 
         </div>
-
 
         <div className="steps">
 
@@ -204,11 +201,9 @@ function Landing() {
           />
 
         </div>
-
       </section>
 
-
-      {/* ================= PLATFORM FLOW ================= */}
+      {/* PLATFORM FLOW */}
       <section className="platform-flow-section">
 
         <div className="section-heading center">
@@ -227,92 +222,42 @@ function Landing() {
 
         </div>
 
-
         <div className="platform-flow">
 
           <div className="flow-item">
-
             <UserRoundSearch size={21} />
-
-            <span>
-              Mentor
-            </span>
-
-            <strong>
-              Connect
-            </strong>
-
+            <span>Mentor</span>
+            <strong>Connect</strong>
           </div>
 
-
-          <ArrowRight
-            className="flow-arrow"
-            size={20}
-          />
-
+          <ArrowRight className="flow-arrow" size={20} />
 
           <div className="flow-item">
-
             <Target size={21} />
-
-            <span>
-              Goals
-            </span>
-
-            <strong>
-              Plan
-            </strong>
-
+            <span>Goals</span>
+            <strong>Plan</strong>
           </div>
 
-
-          <ArrowRight
-            className="flow-arrow"
-            size={20}
-          />
-
+          <ArrowRight className="flow-arrow" size={20} />
 
           <div className="flow-item">
-
             <CalendarDays size={21} />
-
-            <span>
-              Meetings
-            </span>
-
-            <strong>
-              Discuss
-            </strong>
-
+            <span>Meetings</span>
+            <strong>Discuss</strong>
           </div>
 
-
-          <ArrowRight
-            className="flow-arrow"
-            size={20}
-          />
-
+          <ArrowRight className="flow-arrow" size={20} />
 
           <div className="flow-item">
-
             <TrendingUp size={21} />
-
-            <span>
-              Progress
-            </span>
-
-            <strong>
-              Improve
-            </strong>
-
+            <span>Progress</span>
+            <strong>Improve</strong>
           </div>
 
         </div>
-
       </section>
 
-
-      {/* ================= CTA ================= */}
+      {/* FINAL CTA */}
       <section className="final-cta">
 
         <div>
@@ -334,47 +279,32 @@ function Landing() {
 
         </div>
 
-
-        <button className="primary-button">
-
+        <button
+          className="primary-button"
+          onClick={goToAuth}
+        >
           Get Started
-
           <ArrowRight size={18} />
-
         </button>
 
       </section>
 
-
-      {/* ================= FOOTER ================= */}
+      {/* FOOTER */}
       <footer>
 
         <div className="footer-brand">
-
-          <strong>
-            ♡ HandHold
-          </strong>
-
-          <span>
-            Guidance that moves you forward
-          </span>
-
+          <strong>♡ HandHold</strong>
+          <span>Guidance that moves you forward</span>
         </div>
 
-
         <div className="footer-links">
-
           <span>Mentoring</span>
           <span>Goals</span>
           <span>Meetings</span>
           <span>Progress</span>
-
         </div>
 
-
-        <span>
-          © 2026 HandHold
-        </span>
+        <span>© 2026 HandHold</span>
 
       </footer>
 
@@ -382,14 +312,8 @@ function Landing() {
   );
 }
 
-
-/* ================= FEATURE CARD ================= */
-
-function FeatureCard({
-  icon,
-  title,
-  description,
-}) {
+/* FEATURE CARD */
+function FeatureCard({ icon, title, description }) {
   return (
     <div className="feature-card">
 
@@ -397,13 +321,9 @@ function FeatureCard({
         {icon}
       </div>
 
-      <h3>
-        {title}
-      </h3>
+      <h3>{title}</h3>
 
-      <p>
-        {description}
-      </p>
+      <p>{description}</p>
 
       <div className="card-arrow">
         <ArrowRight size={17} />
@@ -413,14 +333,8 @@ function FeatureCard({
   );
 }
 
-
-/* ================= STEP ================= */
-
-function Step({
-  number,
-  title,
-  description,
-}) {
+/* STEP */
+function Step({ number, title, description }) {
   return (
     <div className="step">
 
@@ -428,17 +342,12 @@ function Step({
         {number}
       </div>
 
-      <h3>
-        {title}
-      </h3>
+      <h3>{title}</h3>
 
-      <p>
-        {description}
-      </p>
+      <p>{description}</p>
 
     </div>
   );
 }
-
 
 export default Landing;
