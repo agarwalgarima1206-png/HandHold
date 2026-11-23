@@ -37,9 +37,10 @@ export const signup = asyncHandler(async (req, res) => {
     });
   }
 
-  if (!["STUDENT", "MENTOR"].includes(role)) {
+  // Allow Student, Mentor and Alumni registration
+  if (!["STUDENT", "MENTOR", "ALUMNI"].includes(role)) {
     return res.status(400).json({
-      message: "Invalid role",
+      message: "Invalid role. Select Student, Mentor or Alumni.",
     });
   }
 

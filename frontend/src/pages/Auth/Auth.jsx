@@ -1,17 +1,19 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   GraduationCap,
   UserRound,
+  BriefcaseBusiness,
   ShieldCheck,
   CheckCircle2,
 } from "lucide-react";
+
 import { login, signup } from "../../services/authService";
 
 function Auth() {
   const navigate = useNavigate();
+
   const [isLogin, setIsLogin] = useState(true);
   const [role, setRole] = useState("student");
   const [name, setName] = useState("");
@@ -20,6 +22,23 @@ function Auth() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Navigate according to user's actual role
+  const navigateByRole = (user, isNewUser) => {
+    if (user.role === "MENTOR") {
+      navigate("/mentor/dashboard", { replace: true });
+    } else if (user.role === "ALUMNI") {
+      navigate(
+        isNewUser ? "/alumni/onboarding" : "/alumni/dashboard",
+        { replace: true }
+      );
+    } else {
+      navigate(
+        isNewUser ? "/onboarding" : "/student/dashboard",
+        { replace: true }
+      );
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,17 +74,11 @@ function Auth() {
         });
       }
 
-      const user = result.user;
-
-      if (user.role === "MENTOR") {
-        navigate("/mentor/dashboard", { replace: true });
-      } else if (isLogin) {
-        navigate("/student/dashboard", { replace: true });
-      } else {
-        navigate("/onboarding", { replace: true });
-      }
+      navigateByRole(result.user, !isLogin);
     } catch (err) {
-      setError(err.message || "Authentication failed. Please try again.");
+      setError(
+        err.message || "Authentication failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -73,9 +86,11 @@ function Auth() {
 
   return (
     <div className="auth-page">
+      {/* LEFT SECTION */}
       <div className="auth-info">
         <div className="auth-brand">
           <div className="auth-logo">♡</div>
+
           <div>
             <h2>HandHold</h2>
             <span>Guidance that moves you forward</span>
@@ -101,6 +116,7 @@ function Auth() {
               <div className="benefit-icon">
                 <GraduationCap size={18} />
               </div>
+
               <div>
                 <strong>Student-focused</strong>
                 <span>Guidance designed around your goals.</span>
@@ -111,6 +127,7 @@ function Auth() {
               <div className="benefit-icon">
                 <UserRound size={18} />
               </div>
+
               <div>
                 <strong>Mentor connection</strong>
                 <span>Stay connected with the right mentor.</span>
@@ -119,11 +136,12 @@ function Auth() {
 
             <div className="auth-benefit">
               <div className="benefit-icon">
-                <ShieldCheck size={18} />
+                <BriefcaseBusiness size={18} />
               </div>
+
               <div>
-                <strong>Structured journey</strong>
-                <span>Goals, meetings and progress in one place.</span>
+                <strong>Alumni community</strong>
+                <span>Share your experience and inspire students.</span>
               </div>
             </div>
           </div>
@@ -132,30 +150,37 @@ function Auth() {
         <div className="auth-footer">© 2026 HandHold</div>
       </div>
 
+      {/* RIGHT SECTION */}
       <div className="auth-form-section">
         <div className="auth-form-card">
           <div className="auth-form-header">
             <span className="auth-mobile-brand">HandHold</span>
 
-            <h2>{isLogin ? "Welcome back" : "Create your account"}</h2>
+            <h2>
+              {isLogin ? "Welcome back" : "Create your account"}
+            </h2>
 
             <p>
               {isLogin
                 ? "Log in to continue your mentoring journey."
-                : "Start your mentoring journey with HandHold."}
+                : "Start your journey with the HandHold community."}
             </p>
           </div>
 
+          {/* ROLE SELECTION */}
           <div className="role-section">
             <label>I am a</label>
 
             <div className="role-options">
               <button
                 type="button"
-                className={`role-option ${role === "student" ? "active" : ""}`}
+                className={`role-option ${
+                  role === "student" ? "active" : ""
+                }`}
                 onClick={() => setRole("student")}
               >
                 <GraduationCap size={18} />
+
                 <div>
                   <strong>Student</strong>
                   <span>Looking for guidance</span>
@@ -164,22 +189,42 @@ function Auth() {
 
               <button
                 type="button"
-                className={`role-option ${role === "mentor" ? "active" : ""}`}
+                className={`role-option ${
+                  role === "mentor" ? "active" : ""
+                }`}
                 onClick={() => setRole("mentor")}
               >
                 <UserRound size={18} />
+
                 <div>
                   <strong>Mentor</strong>
                   <span>Ready to guide</span>
                 </div>
               </button>
+
+              <button
+                type="button"
+                className={`role-option ${
+                  role === "alumni" ? "active" : ""
+                }`}
+                onClick={() => setRole("alumni")}
+              >
+                <BriefcaseBusiness size={18} />
+
+                <div>
+                  <strong>Alumni</strong>
+                  <span>Ready to inspire</span>
+                </div>
+              </button>
             </div>
           </div>
 
+          {/* AUTH FORM */}
           <form onSubmit={handleSubmit}>
             {!isLogin && (
               <div className="form-group">
                 <label htmlFor="name">Full name</label>
+
                 <input
                   id="name"
                   type="text"
@@ -193,6 +238,7 @@ function Auth() {
 
             <div className="form-group">
               <label htmlFor="email">Email address</label>
+
               <input
                 id="email"
                 type="email"
@@ -206,8 +252,12 @@ function Auth() {
             <div className="form-group">
               <div className="password-label">
                 <label htmlFor="password">Password</label>
+
                 {isLogin && (
-                  <button type="button" className="forgot-password">
+                  <button
+                    type="button"
+                    className="forgot-password"
+                  >
                     Forgot password?
                   </button>
                 )}
@@ -225,7 +275,10 @@ function Auth() {
 
             {!isLogin && (
               <div className="form-group">
-                <label htmlFor="confirm-password">Confirm password</label>
+                <label htmlFor="confirm-password">
+                  Confirm password
+                </label>
+
                 <input
                   id="confirm-password"
                   type="password"
@@ -265,6 +318,7 @@ function Auth() {
             </button>
           </form>
 
+          {/* LOGIN / SIGNUP SWITCH */}
           <div className="auth-switch">
             <span>
               {isLogin
@@ -285,6 +339,7 @@ function Auth() {
 
           <div className="auth-note">
             <CheckCircle2 size={15} />
+
             <span>
               Your mentoring activities stay organised in one place.
             </span>

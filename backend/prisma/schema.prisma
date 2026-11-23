@@ -10,6 +10,7 @@ datasource db {
 enum Role {
   STUDENT
   MENTOR
+  ALUMNI
   ADMIN
 }
 
@@ -20,28 +21,60 @@ enum MeetingStatus {
   CANCELLED
 }
 
+enum GroupMeetingStatus {
+  REQUESTED
+  CONFIRMED
+  REJECTED
+  CANCELLED
+  COMPLETED
+}
+
+enum ParticipantResponse {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 model User {
-  id                String           @id @default(cuid())
-  name              String
-  email             String           @unique
-  passwordHash      String
-  role              Role             @default(STUDENT)
-  studentProfile    StudentProfile?
-  mentorProfile     MentorProfile?
-  meetingsAsStudent Meeting[]        @relation("StudentMeetings")
-  meetingsAsMentor  Meeting[]        @relation("MentorMeetings")
-  studentsMentored  StudentProfile[] @relation("StudentMentor")
-  goals             Goal[]
-  feedback          Feedback[]
-  notifications     Notification[]
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  id           String @id @default(cuid())
+  name         String
+  email        String @unique
+  passwordHash String
+  role         Role   @default(STUDENT)
+
+  studentProfile StudentProfile?
+  mentorProfile  MentorProfile?
+  alumniProfile  AlumniProfile?
+
+  // Existing one-to-one meetings
+  meetingsAsStudent Meeting[] @relation("StudentMeetings")
+  meetingsAsMentor  Meeting[] @relation("MentorMeetings")
+
+  studentsMentored StudentProfile[] @relation("StudentMentor")
+
+  // Group meetings
+  groupMeetingsAsStudent GroupMeeting[] @relation("GroupMeetingStudent")
+  groupMeetingsAsMentor  GroupMeeting[] @relation("GroupMeetingMentor")
+  groupMeetingsAsAlumni  GroupMeeting[] @relation("GroupMeetingAlumni")
+
+  meetingParticipations MeetingParticipant[]
+
+  // Availability
+  availabilities Availability[]
+
+  goals         Goal[]
+  feedback      Feedback[]
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model StudentProfile {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   college       String?
   course        String?
   semester      String?
@@ -49,60 +82,160 @@ model StudentProfile {
   goal          String?
   mentoringArea String?
   availability  String[] @default([])
-  mentorId      String?
-  mentor        User?    @relation("StudentMentor", fields: [mentorId], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
 
-model MentorProfile {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expertise String[] @default([])
-  bio       String?
+  mentorId String?
+  mentor   User?   @relation("StudentMentor", fields: [mentorId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Meeting {
-  id        String        @id @default(cuid())
-  studentId String
-  student   User          @relation("StudentMeetings", fields: [studentId], references: [id], onDelete: Cascade)
-  mentorId  String?
-  mentor    User?         @relation("MentorMeetings", fields: [mentorId], references: [id], onDelete: SetNull)
-  topic     String
-  date      DateTime
-  time      String
-  status    MeetingStatus @default(REQUESTED)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+model MentorProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expertise String[] @default([])
+  bio       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
+model AlumniProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  company     String?
+  jobTitle    String?
+  experience  String?
+  expertise   String[] @default([])
+  bio         String?
+  linkedinUrl String?
+  location    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Existing one-to-one meeting model - preserved
+model Meeting {
+  id String @id @default(cuid())
+
+  studentId String
+  student   User   @relation("StudentMeetings", fields: [studentId], references: [id], onDelete: Cascade)
+
+  mentorId String?
+  mentor   User?   @relation("MentorMeetings", fields: [mentorId], references: [id], onDelete: SetNull)
+
+  topic  String
+  date   DateTime
+  time   String
+  status MeetingStatus @default(REQUESTED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// New: availability slots for Student, Mentor and Alumni
+model Availability {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  startAt     DateTime
+  endAt       DateTime
+  isAvailable Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, startAt, endAt])
+  @@index([startAt, endAt])
+}
+
+// New: three-person group meeting
+model GroupMeeting {
+  id String @id @default(cuid())
+
+  studentId String
+  student   User   @relation("GroupMeetingStudent", fields: [studentId], references: [id], onDelete: Cascade)
+
+  mentorId String
+  mentor   User   @relation("GroupMeetingMentor", fields: [mentorId], references: [id], onDelete: Cascade)
+
+  alumniId String
+  alumni   User   @relation("GroupMeetingAlumni", fields: [alumniId], references: [id], onDelete: Cascade)
+
+  topic           String
+  startAt         DateTime
+  endAt           DateTime
+  durationMinutes Int
+
+  status GroupMeetingStatus @default(REQUESTED)
+
+  participants MeetingParticipant[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([studentId, startAt])
+  @@index([mentorId, startAt])
+  @@index([alumniId, startAt])
+  @@index([status, startAt, endAt])
+}
+
+// New: individual acceptance or rejection by each participant
+model MeetingParticipant {
+  id             String @id @default(cuid())
+  groupMeetingId String
+  userId         String
+
+  groupMeeting GroupMeeting @relation(fields: [groupMeetingId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  role     Role
+  response ParticipantResponse @default(PENDING)
+
+  respondedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([groupMeetingId, userId])
+  @@index([userId, response])
+}
+
+// Existing models - preserved
 model Goal {
-  id          String   @id @default(cuid())
-  studentId   String
-  student     User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id        String @id @default(cuid())
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
   title       String
-  description String   @default("")
-  completed   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  description String  @default("")
+  completed   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Feedback {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  rating    String
-  comment   String   @default("")
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  rating  String
+  comment String @default("")
+
   createdAt DateTime @default(now())
 }
 
 model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   title     String
   message   String
   type      String   @default("GENERAL")

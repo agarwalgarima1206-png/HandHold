@@ -14,6 +14,7 @@ import {
   X,
   Send,
   CheckCircle2,
+  GraduationCap,
 } from "lucide-react";
 
 import NotificationBell from "../../components/Notifications/NotificationBell";
@@ -52,10 +53,8 @@ function Dashboard() {
 
   return (
     <div className="student-dashboard">
-
       {/* SIDEBAR */}
       <aside className="student-sidebar">
-
         <div className="student-sidebar-brand">
           <div className="student-sidebar-logo">
             <HeartHandshake size={21} />
@@ -68,7 +67,6 @@ function Dashboard() {
         </div>
 
         <nav className="student-nav">
-
           <a
             href="/student/dashboard"
             className="student-nav-item active"
@@ -83,6 +81,15 @@ function Dashboard() {
           >
             <UserRound size={19} />
             <span>My Mentor</span>
+          </a>
+
+          {/* ALUMNI DIRECTORY */}
+          <a
+            href="/student/alumni"
+            className="student-nav-item"
+          >
+            <GraduationCap size={19} />
+            <span>Alumni Directory</span>
           </a>
 
           <a
@@ -116,7 +123,6 @@ function Dashboard() {
             <Star size={19} />
             <span>Feedback</span>
           </a>
-
         </nav>
 
         <div className="student-sidebar-footer">
@@ -127,57 +133,41 @@ function Dashboard() {
             </p>
           </div>
         </div>
-
       </aside>
 
       {/* MAIN CONTENT */}
       <main className="student-main">
-
         {/* TOP BAR */}
         <header className="student-topbar">
-
           <div>
             <span className="topbar-label">Student Space</span>
             <h1>Dashboard</h1>
           </div>
 
           <div className="student-topbar-actions">
-
-            {/* REAL NOTIFICATIONS */}
             <NotificationBell />
 
-            {/* PROFILE */}
             <div className="student-profile">
-
-              <div className="student-avatar">
-                S
-              </div>
+              <div className="student-avatar">S</div>
 
               <div className="student-profile-info">
                 <strong>Student</strong>
                 <span>Mentee</span>
               </div>
-
             </div>
-
           </div>
-
         </header>
 
         {/* CONTENT */}
         <div className="student-content">
-
           {/* WELCOME */}
           <section className="student-welcome">
-
             <div>
               <span className="welcome-eyebrow">
                 YOUR MENTORING JOURNEY
               </span>
 
-              <h2>
-                Welcome back! 👋
-              </h2>
+              <h2>Welcome back! 👋</h2>
 
               <p>
                 Stay connected with your mentor, work towards your
@@ -188,15 +178,12 @@ function Dashboard() {
             <div className="welcome-decoration">
               <HeartHandshake size={42} />
             </div>
-
           </section>
 
           {/* SUMMARY CARDS */}
           <section className="dashboard-summary-grid">
-
             {/* MENTOR */}
             <div className="dashboard-summary-card">
-
               <div className="summary-card-top">
                 <div className="summary-icon mentor-icon">
                   <UserRound size={20} />
@@ -217,12 +204,10 @@ function Dashboard() {
                 View mentor
                 <ArrowUpRight size={15} />
               </a>
-
             </div>
 
             {/* GOALS */}
             <div className="dashboard-summary-card">
-
               <div className="summary-card-top">
                 <div className="summary-icon goal-icon">
                   <Target size={20} />
@@ -243,12 +228,10 @@ function Dashboard() {
                 View goals
                 <ArrowUpRight size={15} />
               </a>
-
             </div>
 
             {/* MEETINGS */}
             <div className="dashboard-summary-card">
-
               <div className="summary-card-top">
                 <div className="summary-icon meeting-icon">
                   <CalendarDays size={20} />
@@ -272,19 +255,14 @@ function Dashboard() {
                 Request meeting
                 <ArrowUpRight size={15} />
               </button>
-
             </div>
-
           </section>
 
           {/* MAIN GRID */}
           <section className="dashboard-main-grid">
-
             {/* MENTOR CONNECTION */}
             <div className="dashboard-panel mentor-panel">
-
               <div className="panel-header">
-
                 <div>
                   <span className="panel-eyebrow">
                     CONNECTION
@@ -294,11 +272,9 @@ function Dashboard() {
                 </div>
 
                 <UserRound size={20} />
-
               </div>
 
               <div className="mentor-empty-state">
-
                 <div className="mentor-empty-icon">
                   <HeartHandshake size={28} />
                 </div>
@@ -318,16 +294,12 @@ function Dashboard() {
                   Go to My Mentor
                   <ChevronRight size={16} />
                 </a>
-
               </div>
-
             </div>
 
             {/* UPCOMING MEETING */}
             <div className="dashboard-panel">
-
               <div className="panel-header">
-
                 <div>
                   <span className="panel-eyebrow">
                     SCHEDULE
@@ -337,11 +309,9 @@ function Dashboard() {
                 </div>
 
                 <Clock3 size={20} />
-
               </div>
 
               <div className="meeting-empty-state">
-
                 <CalendarDays size={30} />
 
                 <h4>No upcoming meetings</h4>
@@ -357,21 +327,15 @@ function Dashboard() {
                 >
                   Request Meeting
                 </button>
-
               </div>
-
             </div>
-
           </section>
 
           {/* LOWER GRID */}
           <section className="dashboard-bottom-grid">
-
             {/* GOALS */}
             <div className="dashboard-panel progress-panel">
-
               <div className="panel-header">
-
                 <div>
                   <span className="panel-eyebrow">
                     YOUR DEVELOPMENT
@@ -381,11 +345,9 @@ function Dashboard() {
                 </div>
 
                 <Target size={20} />
-
               </div>
 
               <div className="progress-empty-state">
-
                 <div className="progress-empty-icon">
                   <Target size={25} />
                 </div>
@@ -398,7 +360,6 @@ function Dashboard() {
                     with your mentor.
                   </p>
                 </div>
-
               </div>
 
               <a
@@ -408,14 +369,11 @@ function Dashboard() {
                 Manage goals
                 <ChevronRight size={16} />
               </a>
-
             </div>
 
             {/* MESSAGES */}
             <div className="dashboard-panel">
-
               <div className="panel-header">
-
                 <div>
                   <span className="panel-eyebrow">
                     COMMUNICATION
@@ -425,11 +383,9 @@ function Dashboard() {
                 </div>
 
                 <MessageCircle size={20} />
-
               </div>
 
               <div className="message-empty-state">
-
                 <div className="message-empty-icon">
                   <MessageCircle size={24} />
                 </div>
@@ -439,7 +395,6 @@ function Dashboard() {
                 <p>
                   Your conversations with mentors will appear here.
                 </p>
-
               </div>
 
               <a
@@ -449,14 +404,11 @@ function Dashboard() {
                 Open messages
                 <ChevronRight size={16} />
               </a>
-
             </div>
-
           </section>
 
           {/* QUICK ACTIONS */}
           <section className="quick-actions-section">
-
             <div className="quick-actions-heading">
               <div>
                 <span className="panel-eyebrow">
@@ -468,7 +420,6 @@ function Dashboard() {
             </div>
 
             <div className="quick-actions-grid">
-
               <a
                 href="/student/mentor"
                 className="quick-action-card"
@@ -480,6 +431,23 @@ function Dashboard() {
                 <div>
                   <strong>My Mentor</strong>
                   <span>View your mentor connection</span>
+                </div>
+
+                <ChevronRight size={17} />
+              </a>
+
+              {/* ALUMNI DIRECTORY QUICK ACTION */}
+              <a
+                href="/student/alumni"
+                className="quick-action-card"
+              >
+                <div className="quick-action-icon">
+                  <GraduationCap size={20} />
+                </div>
+
+                <div>
+                  <strong>Alumni Directory</strong>
+                  <span>Connect with experienced Alumni</span>
                 </div>
 
                 <ChevronRight size={17} />
@@ -516,13 +484,9 @@ function Dashboard() {
 
                 <ChevronRight size={17} />
               </a>
-
             </div>
-
           </section>
-
         </div>
-
       </main>
 
       {/* MEETING MODAL */}
@@ -531,12 +495,10 @@ function Dashboard() {
           className="meeting-modal-overlay"
           onClick={closeMeetingModal}
         >
-
           <div
             className="meeting-modal"
             onClick={(e) => e.stopPropagation()}
           >
-
             <button
               className="modal-close"
               onClick={closeMeetingModal}
@@ -565,7 +527,6 @@ function Dashboard() {
                   onSubmit={handleMeetingSubmit}
                   className="meeting-form"
                 >
-
                   <label>
                     Purpose
 
@@ -579,9 +540,7 @@ function Dashboard() {
                         })
                       }
                     >
-                      <option value="">
-                        Select purpose
-                      </option>
+                      <option value="">Select purpose</option>
 
                       <option value="Academic guidance">
                         Academic guidance
@@ -606,7 +565,6 @@ function Dashboard() {
                   </label>
 
                   <div className="meeting-form-row">
-
                     <label>
                       Preferred Date
 
@@ -638,7 +596,6 @@ function Dashboard() {
                         }
                       />
                     </label>
-
                   </div>
 
                   <label>
@@ -664,13 +621,10 @@ function Dashboard() {
                     <Send size={17} />
                     Send Meeting Request
                   </button>
-
                 </form>
               </>
             ) : (
-
               <div className="request-success">
-
                 <div className="success-icon">
                   <CheckCircle2 size={32} />
                 </div>
@@ -690,16 +644,11 @@ function Dashboard() {
                 >
                   Done
                 </button>
-
               </div>
-
             )}
-
           </div>
-
         </div>
       )}
-
     </div>
   );
 }

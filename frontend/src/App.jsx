@@ -1,8 +1,5 @@
-
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import AccountSwitcher from "./components/AccountSwitcher";
 
-// Common pages
 import Landing from "./pages/Landing/Landing";
 import Auth from "./pages/Auth/Auth";
 
@@ -22,26 +19,30 @@ import MyStudents from "./pages/Mentor/MyStudents";
 import StudentDetails from "./pages/Mentor/StudentDetails";
 import MentorMeetings from "./pages/Mentor/Meetings";
 
+// Alumni pages
+import AlumniOnboarding from "./pages/Alumni/Onboarding";
+import AlumniDashboard from "./pages/Alumni/Dashboard";
+import AlumniDirectory from "./pages/Alumni/AlumniDirectory";
+
 function App() {
   return (
     <BrowserRouter>
-      <AccountSwitcher />
-
       <Routes>
-        {/* Common routes */}
         <Route path="/" element={<Landing />} />
         <Route path="/auth" element={<Auth />} />
 
-        {/* Student onboarding */}
+        {/* Student portal */}
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/student/onboarding" element={<Onboarding />} />
-
-        {/* Student dashboard */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/student/dashboard" element={<Dashboard />} />
-
-        {/* Student portal */}
         <Route path="/student/mentor" element={<MyMentor />} />
+
+        <Route
+          path="/student/alumni"
+          element={<AlumniDirectory />}
+        />
+
         <Route path="/student/goals" element={<GoalsProgress />} />
         <Route path="/student/meetings" element={<Meetings />} />
         <Route path="/student/messages" element={<Messages />} />
@@ -57,12 +58,24 @@ function App() {
         <Route path="/mentor/dashboard" element={<MentorDashboard />} />
         <Route path="/mentor/students" element={<MyStudents />} />
         <Route path="/mentor/meetings" element={<MentorMeetings />} />
+
         <Route
           path="/mentor/students/:studentId"
           element={<StudentDetails />}
         />
 
-        {/* Unknown route */}
+        {/* Alumni portal */}
+        <Route
+          path="/alumni/onboarding"
+          element={<AlumniOnboarding />}
+        />
+
+        <Route
+          path="/alumni/dashboard"
+          element={<AlumniDashboard />}
+        />
+
+        {/* Unknown URLs */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

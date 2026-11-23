@@ -1,11 +1,12 @@
-
 import express from 'express';
 import cors from 'cors';
 
 import authRoutes from './routes/auth.routes.js';
 import studentRoutes from './routes/student.routes.js';
 import mentorRoutes from './routes/mentor.routes.js';
+import alumniRoutes from './routes/alumni.routes.js';
 import meetingRoutes from './routes/meeting.routes.js';
+import availabilityRoutes from './routes/availability.routes.js';
 import goalRoutes from './routes/goal.routes.js';
 import feedbackRoutes from './routes/feedback.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
@@ -30,7 +31,9 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/mentors', mentorRoutes);
+app.use('/api/alumni', alumniRoutes);
 app.use('/api/meetings', meetingRoutes);
+app.use('/api/availability', availabilityRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/notifications', notificationRoutes);
