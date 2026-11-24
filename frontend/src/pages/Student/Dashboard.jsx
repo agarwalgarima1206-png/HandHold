@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { apiRequest } from "../../services/api";
 import {
   LayoutDashboard,
   UserRound,
@@ -22,6 +23,7 @@ import NotificationBell from "../../components/Notifications/NotificationBell";
 function Dashboard() {
   const [showMeetingModal, setShowMeetingModal] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [meetingForm, setMeetingForm] = useState({
     purpose: "",
@@ -30,13 +32,37 @@ function Dashboard() {
     message: "",
   });
 
-  const handleMeetingSubmit = (e) => {
+  // Submit meeting request to backend
+  const handleMeetingSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Meeting request:", meetingForm);
+    if (isSubmitting) return;
 
-    // Backend integration will happen here later.
-    setRequestSent(true);
+    setIsSubmitting(true);
+
+    try {
+      const topic = [
+        meetingForm.purpose,
+        meetingForm.message.trim(),
+      ]
+        .filter(Boolean)
+        .join(" - ");
+
+      await apiRequest("/meetings", {
+        method: "POST",
+        body: JSON.stringify({
+          topic,
+          date: meetingForm.date,
+          time: meetingForm.time,
+        }),
+      });
+
+      setRequestSent(true);
+    } catch (error) {
+      alert(error.message || "Unable to send meeting request.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const closeMeetingModal = () => {
@@ -502,6 +528,7 @@ function Dashboard() {
             <button
               className="modal-close"
               onClick={closeMeetingModal}
+              disabled={isSubmitting}
             >
               <X size={20} />
             </button>
@@ -571,6 +598,7 @@ function Dashboard() {
                       <input
                         type="date"
                         required
+                        min={new Date().toLocaleDateString("en-CA")}
                         value={meetingForm.date}
                         onChange={(e) =>
                           setMeetingForm({
@@ -617,9 +645,12 @@ function Dashboard() {
                   <button
                     type="submit"
                     className="modal-submit-button"
+                    disabled={isSubmitting}
                   >
                     <Send size={17} />
-                    Send Meeting Request
+                    {isSubmitting
+                      ? "Sending Request..."
+                      : "Send Meeting Request"}
                   </button>
                 </form>
               </>
@@ -632,10 +663,8 @@ function Dashboard() {
                 <h2>Request Submitted</h2>
 
                 <p>
-                  Your meeting request has been recorded.
-                  Once the backend is connected, your mentor
-                  will receive this request and you'll be
-                  notified when they respond.
+                  Your meeting request has been sent successfully.
+                  Your assigned mentor will receive a notification.
                 </p>
 
                 <button

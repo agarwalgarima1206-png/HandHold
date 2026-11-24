@@ -17,7 +17,6 @@ import ProfileSettings from "./pages/Student/ProfileSettings";
 import MentorDashboard from "./pages/Mentor/Dashboard";
 import MyStudents from "./pages/Mentor/MyStudents";
 import StudentDetails from "./pages/Mentor/StudentDetails";
-import MentorMeetings from "./pages/Mentor/Meetings";
 
 // Alumni pages
 import AlumniOnboarding from "./pages/Alumni/Onboarding";
@@ -57,8 +56,11 @@ function App() {
         {/* Mentor portal */}
         <Route path="/mentor/dashboard" element={<MentorDashboard />} />
         <Route path="/mentor/students" element={<MyStudents />} />
+<<<<<<< HEAD
         <Route path="/mentor/meetings" element={<MentorMeetings />} />
 
+=======
+>>>>>>> 91139b5 (Update student dashboard and feedback integration)
         <Route
           path="/mentor/students/:studentId"
           element={<StudentDetails />}
